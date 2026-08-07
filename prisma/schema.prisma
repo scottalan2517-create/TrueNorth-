@@ -1,0 +1,208 @@
+// TrueNorth — data model
+// Standalone product, standalone database. Nothing here references FinalCoat HQ.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Tier {
+  STARTER
+  COMPLETE
+}
+
+enum DebtType {
+  CREDIT_CARD
+  STUDENT_LOAN
+  AUTO_LOAN
+  MORTGAGE
+  PERSONAL_LOAN
+  OTHER
+}
+
+enum BudgetGroup {
+  ESSENTIALS
+  LIFESTYLE
+  SAVINGS_AND_DEBT
+}
+
+enum GoalKind {
+  EMERGENCY_FUND
+  DEBT_PAYOFF
+  SAVINGS
+  CUSTOM
+}
+
+enum PriorityStage {
+  STABILIZE_AND_ATTACK_DEBT
+  SURVIVAL
+  PAY_DEBT
+  STABILIZE
+  INVEST
+}
+
+enum PayoffStrategy {
+  AVALANCHE
+  SNOWBALL
+}
+
+// The paying customer. Multi-tenant — every other model is scoped to a userId.
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  onboardedAt DateTime?
+
+  // Account lockout — incremented on each failed login, reset on success.
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+
+  // Tier + entitlement. Tier is null until first purchase completes.
+  tier             Tier?
+  tierPurchasedAt  DateTime?
+  plusActive       Boolean   @default(false)
+  plusRenewsAt     DateTime?
+
+  stripeCustomerId     String? @unique
+  stripeSubscriptionId String? @unique
+
+  profile         FinancialProfile?
+  netWorthEntries NetWorthSnapshot[]
+  debts           DebtAccount[]
+  budgetCategories BudgetCategory[]
+  goals           Goal[]
+  moneyDates      MoneyDateLog[]
+}
+
+// Settings that feed the four engines. One row per user.
+model FinancialProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  monthlyTakeHomeIncome  Float @default(0)
+  monthlyEssentialSpend  Float @default(0) // rent, utilities, groceries, insurance, minimum debt payments
+  highInterestAprCutoff  Float @default(8) // APR at/above this is "high interest" for the Priority Engine
+  defaultConsistencyPct  Float @default(85) // used by the Projection Engine as a realism haircut
+  payoffStrategy         PayoffStrategy @default(AVALANCHE)
+
+  updatedAt DateTime @updatedAt
+}
+
+// One row per month — the "Refresh" phase of the Money Date. Point-in-time
+// totals across every asset and debt bucket, mirroring the original Wealth
+// Engine database.
+model NetWorthSnapshot {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  date DateTime @default(now())
+
+  cash        Float @default(0)
+  investments Float @default(0)
+  retirement  Float @default(0)
+  realEstate  Float @default(0)
+  otherAssets Float @default(0)
+
+  creditCardDebt Float @default(0)
+  studentLoanDebt Float @default(0)
+  mortgageDebt   Float @default(0)
+  autoLoanDebt   Float @default(0)
+  otherDebt      Float @default(0)
+
+  note String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, date])
+}
+
+// Granular debt tracking for the payoff planner (avalanche/snowball), kept
+// separate from the coarse debt totals in NetWorthSnapshot.
+model DebtAccount {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name        String
+  type        DebtType
+  balance     Float
+  apr         Float
+  minPayment  Float
+  sortOrder   Int      @default(0)
+  paidOffAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model BudgetCategory {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name           String
+  group          BudgetGroup
+  monthlyPlanned Float       @default(0)
+  sortOrder      Int         @default(0)
+
+  actuals BudgetActual[]
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model BudgetActual {
+  id         String         @id @default(cuid())
+  categoryId String
+  category   BudgetCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  month  String @db.VarChar(7) // "2026-08"
+  amount Float
+
+  @@unique([categoryId, month])
+}
+
+model Goal {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name          String
+  kind          GoalKind
+  targetAmount  Float
+  currentAmount Float    @default(0)
+  targetDate    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// The three-phase monthly ritual: Refresh -> Review & Decide -> Log.
+model MoneyDateLog {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  date          DateTime      @default(now())
+  priorityStage PriorityStage
+  note          String
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, date])
+}

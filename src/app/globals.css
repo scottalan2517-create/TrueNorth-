@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-navy: #12233b;
+  --color-navy-deep: #0a1526;
+  --color-navy-raised: #17294480;
+  --color-gold: #c9962e;
+  --color-gold-soft: #e0b968;
+  --color-red: #a8322b;
+  --color-red-soft: #c96259;
+  --color-cream: #f4efe4;
+  --color-cream-dim: #e6dfcc;
+  --color-ink: #14181f;
+  --color-good: #4f8f63;
+  --color-warn: #c9962e;
+  --color-bad: #a8322b;
+}
+
+:root {
+  color-scheme: light;
+  --line: rgba(18, 35, 59, 0.1);
+  --line-soft: rgba(18, 35, 59, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-navy);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+}
+
+::selection {
+  background: var(--color-gold);
+  color: var(--color-navy-deep);
+}
+
+/* Motion */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rise-in {
+  animation: rise-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes needle-settle {
+  0% {
+    transform: rotate(-8deg);
+    opacity: 0;
+  }
+  60% {
+    transform: rotate(3deg);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.needle-settle {
+  animation: needle-settle 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise-in,
+  .needle-settle {
+    animation: none !important;
+  }
+}
+
+/* Mono data labels used throughout for the "instrument panel" feel */
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Custom scrollbar for horizontally-scrolling strips (mobile) */
+.scroll-x {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scroll-x::-webkit-scrollbar {
+  display: none;
+}
