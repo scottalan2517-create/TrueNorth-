@@ -61,7 +61,7 @@ function LoginForm() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="bg-white/[0.04] border-cream/15 text-cream placeholder:text-cream/30 focus:border-gold/60"
+              dark
             />
           </Field>
           <Field label="Password" htmlFor="password" dark>
@@ -73,7 +73,7 @@ function LoginForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="bg-white/[0.04] border-cream/15 text-cream placeholder:text-cream/30 focus:border-gold/60"
+              dark
             />
           </Field>
           {error && <p className="text-sm text-red-soft">{error}</p>}

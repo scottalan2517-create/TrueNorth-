@@ -34,13 +34,17 @@ export function Field({ label, htmlFor, hint, error, children, dark }: FieldProp
 
 export function TextInput({
   className,
+  dark,
   ...props
-}: InputHTMLAttributes<HTMLInputElement>) {
+}: InputHTMLAttributes<HTMLInputElement> & { dark?: boolean }) {
   return (
     <input
       className={clsx(
-        "w-full rounded-xl border border-navy/15 bg-white px-4 py-3 text-base text-navy placeholder:text-navy/35",
+        "w-full rounded-xl border px-4 py-3 text-base",
         "focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/60",
+        dark
+          ? "bg-white/[0.04] border-cream/15 text-cream placeholder:text-cream/30"
+          : "bg-white border-navy/15 text-navy placeholder:text-navy/35",
         className,
       )}
       {...props}
