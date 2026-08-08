@@ -37,7 +37,7 @@ export default async function DashboardPage() {
       <PriorityHero priority={state.priority} />
 
       <DarkCard>
-        <FragilityRing fragility={state.fragility} />
+        <FragilityRing fragility={state.fragility} accentSeverity={state.priority.severity} />
       </DarkCard>
 
       <ActionPanelCard items={state.actionItems} surplus={state.monthlySurplus} />
