@@ -10,11 +10,19 @@ const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 // every mutating route only accepts application/json (which forces a CORS
 // preflight our server never approves for foreign origins), but checking
 // Origin here costs nothing and doesn't rely on either of those holding.
+//
+// Compare against the Host the client actually connected to, not
+// request.nextUrl.host — behind a reverse proxy (Railway, and virtually
+// every PaaS) that can reflect an internal hostname instead of the public
+// domain, which false-positives every request. X-Forwarded-Host is the
+// standard header proxies set for exactly this.
 function isSameOrigin(request: NextRequest): boolean {
   const origin = request.headers.get("origin");
   if (!origin) return true;
+  const host =
+    request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? request.nextUrl.host;
   try {
-    return new URL(origin).host === request.nextUrl.host;
+    return new URL(origin).host === host;
   } catch {
     return false;
   }
