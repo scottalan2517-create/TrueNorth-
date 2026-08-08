@@ -44,31 +44,34 @@ export default function SignupPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <Field label="First name" htmlFor="firstName" hint="Optional">
+          <Field label="First name" htmlFor="firstName" hint="Optional" dark>
             <TextInput
               id="firstName"
               autoComplete="given-name"
+              placeholder="Alex"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               className="bg-white/[0.04] border-cream/15 text-cream placeholder:text-cream/30 focus:border-gold/60"
             />
           </Field>
-          <Field label="Email" htmlFor="email">
+          <Field label="Email" htmlFor="email" dark>
             <TextInput
               id="email"
               type="email"
               autoComplete="email"
+              placeholder="you@example.com"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="bg-white/[0.04] border-cream/15 text-cream placeholder:text-cream/30 focus:border-gold/60"
             />
           </Field>
-          <Field label="Password" htmlFor="password" hint="At least 8 characters">
+          <Field label="Password" htmlFor="password" hint="At least 8 characters" dark>
             <TextInput
               id="password"
               type="password"
               autoComplete="new-password"
+              placeholder="••••••••"
               required
               minLength={8}
               value={password}

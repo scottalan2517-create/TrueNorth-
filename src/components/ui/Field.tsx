@@ -8,17 +8,26 @@ interface FieldProps {
   error?: string;
   suffix?: ReactNode;
   children?: ReactNode;
+  /** Use on dark (navy) backgrounds — swaps label/hint to light text. */
+  dark?: boolean;
 }
 
-export function Field({ label, htmlFor, hint, error, children }: FieldProps) {
+export function Field({ label, htmlFor, hint, error, children, dark }: FieldProps) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={htmlFor} className="text-sm font-medium text-navy/80">
+      <label
+        htmlFor={htmlFor}
+        className={clsx("text-sm font-medium", dark ? "text-cream/80" : "text-navy/80")}
+      >
         {label}
       </label>
       {children}
-      {hint && !error && <p className="text-xs text-navy/45">{hint}</p>}
-      {error && <p className="text-xs text-red">{error}</p>}
+      {hint && !error && (
+        <p className={clsx("text-xs", dark ? "text-cream/45" : "text-navy/45")}>{hint}</p>
+      )}
+      {error && (
+        <p className={clsx("text-xs", dark ? "text-red-soft" : "text-red")}>{error}</p>
+      )}
     </div>
   );
 }

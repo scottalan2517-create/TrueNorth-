@@ -52,22 +52,24 @@ function LoginForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <Field label="Email" htmlFor="email">
+          <Field label="Email" htmlFor="email" dark>
             <TextInput
               id="email"
               type="email"
               autoComplete="email"
+              placeholder="you@example.com"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="bg-white/[0.04] border-cream/15 text-cream placeholder:text-cream/30 focus:border-gold/60"
             />
           </Field>
-          <Field label="Password" htmlFor="password">
+          <Field label="Password" htmlFor="password" dark>
             <TextInput
               id="password"
               type="password"
               autoComplete="current-password"
+              placeholder="••••••••"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
