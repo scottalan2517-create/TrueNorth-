@@ -19,6 +19,33 @@ function getResend(): Resend {
   return client;
 }
 
+export async function sendPasswordResetEmail(to: string, firstName: string | null, token: string) {
+  const from = process.env.EMAIL_FROM;
+  if (!from) {
+    throw new Error("EMAIL_FROM is not set. Add it to your .env file.");
+  }
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const greeting = firstName ? `Hey ${firstName},` : "Hey,";
+  const resetUrl = `${appUrl}/reset-password?token=${token}`;
+
+  await getResend().emails.send({
+    from,
+    to,
+    subject: "Reset your TrueNorth password",
+    text: [
+      greeting,
+      "",
+      "Someone (hopefully you) asked to reset your TrueNorth password. This link works for one hour:",
+      "",
+      resetUrl,
+      "",
+      "If you didn't request this, you can ignore this email — your password won't change.",
+      "",
+      "— TrueNorth",
+    ].join("\n"),
+  });
+}
+
 export async function sendMoneyDateReminder(to: string, firstName: string | null) {
   const from = process.env.EMAIL_FROM;
   if (!from) {

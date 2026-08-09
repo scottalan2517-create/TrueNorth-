@@ -2,10 +2,12 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
+import { randomBytes, createHash } from "node:crypto";
 import { db } from "@/lib/db";
 
 const SESSION_COOKIE = "truenorth_session";
 const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 60; // 60 days — this is a monthly-use product
+export const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 function getSecretKey() {
   const secret = process.env.SESSION_SECRET;
@@ -70,6 +72,18 @@ export async function requireUser() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   return user;
+}
+
+// Generates the plaintext token to email and the hash to persist — never
+// store the plaintext, same reasoning as the session cookie.
+export function generateResetToken() {
+  const token = randomBytes(32).toString("hex");
+  const tokenHash = createHash("sha256").update(token).digest("hex");
+  return { token, tokenHash };
+}
+
+export function hashResetToken(token: string) {
+  return createHash("sha256").update(token).digest("hex");
 }
 
 export { SESSION_COOKIE };

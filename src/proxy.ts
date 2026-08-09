@@ -3,7 +3,15 @@ import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 const SESSION_COOKIE = "truenorth_session";
-const PUBLIC_PATHS = ["/login", "/signup", "/api/auth", "/api/stripe/webhook", "/api/cron"];
+const PUBLIC_PATHS = [
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/reset-password",
+  "/api/auth",
+  "/api/stripe/webhook",
+  "/api/cron",
+];
 const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
 // Defense in depth against CSRF: the session cookie is SameSite=Lax and

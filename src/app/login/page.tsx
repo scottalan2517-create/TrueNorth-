@@ -76,6 +76,9 @@ function LoginForm() {
               dark
             />
           </Field>
+          <Link href="/forgot-password" className="text-sm text-gold-soft font-medium -mt-2 self-end">
+            Forgot password?
+          </Link>
           {error && <p className="text-sm text-red-soft">{error}</p>}
           <Button type="submit" variant="gold" size="lg" disabled={loading} className="w-full mt-2">
             {loading ? "Signing in…" : "Sign in"}

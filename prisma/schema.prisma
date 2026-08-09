@@ -65,6 +65,11 @@ model User {
   failedLoginAttempts Int       @default(0)
   lockedUntil         DateTime?
 
+  // Forgot-password flow. Only the SHA-256 hash of the emailed token is
+  // stored, mirroring how the session cookie itself is never persisted.
+  resetTokenHash      String?   @unique
+  resetTokenExpiresAt DateTime?
+
   // Tier + entitlement. Tier is null until first purchase completes.
   tier             Tier?
   tierPurchasedAt  DateTime?
