@@ -8,6 +8,7 @@ import { ActionPanelCard } from "@/components/dashboard/ActionPanelCard";
 import { NetWorthCard } from "@/components/dashboard/NetWorthCard";
 import { ProjectionTeaser } from "@/components/dashboard/ProjectionTeaser";
 import { MoneyDateCTA } from "@/components/dashboard/MoneyDateCTA";
+import { OnboardingSprint } from "@/components/dashboard/OnboardingSprint";
 import { DarkCard } from "@/components/ui/Card";
 import { hasFeature } from "@/lib/tiers";
 import { ArrowRight } from "lucide-react";
@@ -33,6 +34,8 @@ export default async function DashboardPage() {
         </p>
         <h1 className="font-display text-xl text-navy mt-0.5">Here&rsquo;s where you stand.</h1>
       </div>
+
+      {hasFeature(user, "onboarding_sprint") && <OnboardingSprint progress={state.sprintProgress} />}
 
       <PriorityHero priority={state.priority} />
 

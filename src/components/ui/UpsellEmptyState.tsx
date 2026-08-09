@@ -4,9 +4,11 @@ import { Compass } from "@/components/ui/Compass";
 export function UpsellEmptyState({
   title,
   body,
+  cta = "Upgrade to Complete →",
 }: {
   title: string;
   body: string;
+  cta?: string;
 }) {
   return (
     <div className="rise-in flex flex-col items-center text-center gap-4 rounded-2xl border border-gold/20 bg-navy px-6 py-12 text-cream">
@@ -16,7 +18,7 @@ export function UpsellEmptyState({
         <p className="text-cream/60 text-sm mt-2 leading-relaxed max-w-xs">{body}</p>
       </div>
       <LinkButton href="/settings/upgrade" variant="gold">
-        Upgrade to Complete →
+        {cta}
       </LinkButton>
     </div>
   );

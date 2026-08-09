@@ -71,6 +71,10 @@ model User {
   plusActive       Boolean   @default(false)
   plusRenewsAt     DateTime?
 
+  // Guards the Money Date reminder cron against re-sending within the same
+  // month once someone's already been nudged.
+  moneyDateReminderSentAt DateTime?
+
   stripeCustomerId     String? @unique
   stripeSubscriptionId String? @unique
 

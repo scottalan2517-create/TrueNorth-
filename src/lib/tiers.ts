@@ -61,9 +61,24 @@ export const PLUS = {
   ],
 };
 
-export type Feature = "budget" | "goals" | "csv_export" | "onboarding_sprint" | "reminders" | "changelog";
+export type Feature =
+  | "budget"
+  | "goals"
+  | "csv_export"
+  | "csv_import"
+  | "onboarding_sprint"
+  | "money_date_history"
+  | "reminders"
+  | "changelog";
 
-const COMPLETE_FEATURES = new Set<Feature>(["budget", "goals", "csv_export", "onboarding_sprint"]);
+const COMPLETE_FEATURES = new Set<Feature>([
+  "budget",
+  "goals",
+  "csv_export",
+  "csv_import",
+  "onboarding_sprint",
+  "money_date_history",
+]);
 const PLUS_FEATURES = new Set<Feature>(["reminders", "changelog"]);
 
 export function hasFeature(

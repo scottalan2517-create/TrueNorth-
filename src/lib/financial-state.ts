@@ -5,12 +5,14 @@ import { computeActionPlan } from "@/lib/engines/action";
 import { projectBalance } from "@/lib/engines/projection";
 
 export async function getFinancialState(userId: string) {
-  const [profile, snapshots, debts, goals, lastMoneyDate] = await Promise.all([
+  const [profile, snapshots, debts, goals, lastMoneyDate, moneyDateCount, budgetCategoryCount] = await Promise.all([
     db.financialProfile.findUnique({ where: { userId } }),
     db.netWorthSnapshot.findMany({ where: { userId }, orderBy: { date: "asc" } }),
     db.debtAccount.findMany({ where: { userId, balance: { gt: 0 } }, orderBy: { sortOrder: "asc" } }),
     db.goal.findMany({ where: { userId }, orderBy: { createdAt: "asc" } }),
     db.moneyDateLog.findFirst({ where: { userId }, orderBy: { date: "desc" } }),
+    db.moneyDateLog.count({ where: { userId } }),
+    db.budgetCategory.count({ where: { userId } }),
   ]);
 
   const latest = snapshots[snapshots.length - 1] ?? null;
@@ -84,6 +86,12 @@ export async function getFinancialState(userId: string) {
     totalDebts,
     netWorthHistory,
     daysSinceLastMoneyDate,
+    sprintProgress: {
+      loggedMoneyDate: moneyDateCount >= 1,
+      setGoal: goals.length >= 1,
+      builtBudget: budgetCategoryCount >= 1,
+      refreshedTwice: snapshots.length >= 2,
+    },
   };
 }
 

@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 const SESSION_COOKIE = "truenorth_session";
-const PUBLIC_PATHS = ["/login", "/signup", "/api/auth", "/api/stripe/webhook"];
+const PUBLIC_PATHS = ["/login", "/signup", "/api/auth", "/api/stripe/webhook", "/api/cron"];
 const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
 // Defense in depth against CSRF: the session cookie is SameSite=Lax and
@@ -54,7 +54,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.json({ error: "Cross-origin request blocked." }, { status: 403 });
   }
 
-  const isPublicPath = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
+  const isPublicPath = pathname === "/" || PUBLIC_PATHS.some((path) => pathname.startsWith(path));
   const signedIn = await hasValidSession(request);
 
   if (!signedIn && !isPublicPath) {

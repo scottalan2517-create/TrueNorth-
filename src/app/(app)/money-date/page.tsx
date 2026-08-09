@@ -2,14 +2,17 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { getFinancialState } from "@/lib/financial-state";
 import { db } from "@/lib/db";
+import { hasFeature } from "@/lib/tiers";
 import { MoneyDateWizard } from "./money-date-wizard";
+import { MoneyDateHistory } from "@/components/money-date/MoneyDateHistory";
+import { UpsellEmptyState } from "@/components/ui/UpsellEmptyState";
 
 export default async function MoneyDatePage() {
   const user = await requireUser();
   if (!user.tier) redirect("/settings/upgrade");
-  const [state, logCount] = await Promise.all([
+  const [state, logs] = await Promise.all([
     getFinancialState(user.id),
-    db.moneyDateLog.count({ where: { userId: user.id } }),
+    db.moneyDateLog.findMany({ where: { userId: user.id }, orderBy: { date: "desc" } }),
   ]);
 
   return (
@@ -38,8 +41,17 @@ export default async function MoneyDatePage() {
         }
         priority={state.priority}
         actionItems={state.actionItems}
-        logCount={logCount}
+        logCount={logs.length}
       />
+
+      {hasFeature(user, "money_date_history") ? (
+        <MoneyDateHistory logs={logs} />
+      ) : (
+        <UpsellEmptyState
+          title="Your story, twelve sentences a year"
+          body="TrueNorth Complete keeps your full Money Date history — every entry, a running streak, all in one place."
+        />
+      )}
     </div>
   );
 }

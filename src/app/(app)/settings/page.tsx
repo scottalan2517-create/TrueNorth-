@@ -28,6 +28,11 @@ export default async function SettingsPage() {
           {user.tier ? TIERS[user.tier].name : "No plan yet"}
           {user.plusActive && " + Plus"}
         </p>
+        {user.plusActive && (
+          <Link href="/changelog" className="text-sm text-gold font-medium mt-1 inline-block">
+            What&rsquo;s new →
+          </Link>
+        )}
         <div className="flex flex-col gap-2 mt-4">
           {(!user.tier || user.tier === "STARTER" || !user.plusActive) && (
             <LinkButton href="/settings/upgrade" variant="gold">
