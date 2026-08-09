@@ -8,6 +8,7 @@ import { SignOutButton } from "@/components/settings/SignOutButton";
 import { PortalButton } from "@/components/settings/PortalButton";
 import { ChangePasswordForm } from "@/components/settings/ChangePasswordForm";
 import { DeleteAccountSection } from "@/components/settings/DeleteAccountSection";
+import { CsvImportForm } from "@/components/settings/CsvImportForm";
 import { hasFeature, TIERS } from "@/lib/tiers";
 import { Download } from "lucide-react";
 
@@ -61,15 +62,18 @@ export default async function SettingsPage() {
       <Card>
         <MonoLabel className="text-navy/40 mb-3 block">Data</MonoLabel>
         {hasFeature(user, "csv_export") ? (
-          <a
-            href="/api/export/csv"
-            className="flex items-center gap-2 text-sm font-semibold text-navy"
-          >
-            <Download size={15} /> Export net worth history (CSV)
-          </a>
+          <div className="flex flex-col gap-3">
+            <a
+              href="/api/export/csv"
+              className="flex items-center gap-2 text-sm font-semibold text-navy"
+            >
+              <Download size={15} /> Export net worth history (CSV)
+            </a>
+            <CsvImportForm />
+          </div>
         ) : (
           <p className="text-sm text-navy/45">
-            CSV export is part of{" "}
+            CSV export and import are part of{" "}
             <Link href="/settings/upgrade" className="text-gold font-medium">
               TrueNorth Complete
             </Link>
