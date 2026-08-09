@@ -8,7 +8,7 @@ export function CheckoutButton({
   label,
   variant = "primary",
 }: {
-  product: "STARTER" | "COMPLETE" | "PLUS";
+  product: "STARTER" | "COMPLETE" | "PLUS" | "PLUS_ANNUAL";
   label: string;
   variant?: "primary" | "gold" | "outline";
 }) {

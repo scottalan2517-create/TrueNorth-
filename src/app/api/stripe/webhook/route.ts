@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       const product = session.metadata?.product;
       if (!userId || !product) break;
 
-      if (product === "PLUS") {
+      if (product === "PLUS" || product === "PLUS_ANNUAL") {
         await db.user.update({
           where: { id: userId },
           data: {

@@ -4,12 +4,13 @@ import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { getStripe } from "@/lib/stripe";
 
-const schema = z.object({ product: z.enum(["STARTER", "COMPLETE", "PLUS"]) });
+const schema = z.object({ product: z.enum(["STARTER", "COMPLETE", "PLUS", "PLUS_ANNUAL"]) });
 
 const PRICE_ENV: Record<string, string | undefined> = {
   STARTER: process.env.STRIPE_PRICE_STARTER,
   COMPLETE: process.env.STRIPE_PRICE_COMPLETE,
   PLUS: process.env.STRIPE_PRICE_PLUS,
+  PLUS_ANNUAL: process.env.STRIPE_PRICE_PLUS_ANNUAL,
 };
 
 export async function POST(request: Request) {
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
     client_reference_id: user.id,
-    mode: parsed.data.product === "PLUS" ? "subscription" : "payment",
+    mode: parsed.data.product === "PLUS" || parsed.data.product === "PLUS_ANNUAL" ? "subscription" : "payment",
     line_items: [{ price: priceId, quantity: 1 }],
     metadata: { userId: user.id, product: parsed.data.product },
     success_url: `${appUrl}/settings?upgraded=1`,

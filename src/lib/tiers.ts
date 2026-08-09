@@ -51,6 +51,8 @@ export const PLUS = {
   name: "TrueNorth Plus",
   price: 19,
   priceSuffix: "/mo",
+  annualPrice: 190,
+  annualPriceSuffix: "/yr",
   tagline: "Not a budget. A decision engine.",
   features: [
     "Ongoing updates as they ship",

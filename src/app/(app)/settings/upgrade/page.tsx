@@ -1,7 +1,8 @@
 import { requireUser } from "@/lib/auth";
-import { Card, DarkCard, MonoLabel } from "@/components/ui/Card";
+import { Card, MonoLabel } from "@/components/ui/Card";
 import { CheckoutButton } from "@/components/settings/CheckoutButton";
-import { TIERS, PLUS } from "@/lib/tiers";
+import { PlusPricingCard } from "@/components/settings/PlusPricingCard";
+import { TIERS } from "@/lib/tiers";
 import { Check } from "lucide-react";
 
 export default async function UpgradePage() {
@@ -43,30 +44,7 @@ export default async function UpgradePage() {
         );
       })}
 
-      <DarkCard>
-        <MonoLabel className="text-gold">Add-on · requires Starter or Complete</MonoLabel>
-        <p className="font-display text-xl text-cream mt-1">{PLUS.name}</p>
-        <p className="text-cream/60 text-sm mt-1">{PLUS.tagline}</p>
-        <p className="font-display text-3xl text-cream mt-3">
-          ${PLUS.price}
-          <span className="text-sm text-cream/50 font-sans"> {PLUS.priceSuffix}</span>
-        </p>
-        <ul className="flex flex-col gap-2 mt-4 mb-5">
-          {PLUS.features.map((f) => (
-            <li key={f} className="flex items-start gap-2 text-sm text-cream/75">
-              <Check size={15} className="text-gold shrink-0 mt-0.5" />
-              {f}
-            </li>
-          ))}
-        </ul>
-        {user.plusActive ? (
-          <p className="text-center text-sm font-semibold text-cream/50">Active</p>
-        ) : !user.tier ? (
-          <p className="text-center text-sm text-cream/50">Buy Starter or Complete first</p>
-        ) : (
-          <CheckoutButton product="PLUS" label="Add Plus" variant="gold" />
-        )}
-      </DarkCard>
+      <PlusPricingCard plusActive={user.plusActive} canBuy={!!user.tier} />
 
       <p className="text-center text-xs text-navy/35 font-mono">
         Educational use only · Not financial, investment, or tax advice
