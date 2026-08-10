@@ -31,20 +31,25 @@ see below.
 | `SESSION_SECRET` | Random string used to sign session cookies. Generate with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. |
 | `STRIPE_SECRET_KEY` | Stripe secret key (test or live). |
 | `STRIPE_WEBHOOK_SECRET` | Signing secret for the `/api/stripe/webhook` endpoint. |
-| `STRIPE_PRICE_STARTER` / `STRIPE_PRICE_COMPLETE` / `STRIPE_PRICE_PLUS` | Stripe Price IDs for the three products. Starter/Complete are one-time payment prices; Plus is a recurring monthly price. |
-| `NEXT_PUBLIC_APP_URL` | Base URL used for Stripe checkout success/cancel redirects. |
+| `STRIPE_PRICE_STARTER` / `STRIPE_PRICE_COMPLETE` / `STRIPE_PRICE_PLUS` / `STRIPE_PRICE_PLUS_ANNUAL` | Stripe Price IDs for the four products. Starter/Complete are one-time payment prices; Plus (monthly) and Plus Annual are recurring. |
+| `RESEND_API_KEY` / `EMAIL_FROM` | Powers password reset emails and Money Date reminders. Leave blank and both fail gracefully with a clear message instead of crashing. |
+| `CRON_SECRET` | Authorizes calls to `/api/cron/money-date-reminders`. Only needed if you wire up a scheduler for that route. |
+| `NEXT_PUBLIC_APP_URL` | Base URL used for Stripe checkout redirects and links in outgoing emails. |
 
-Until the Stripe env vars are set, checkout buttons fail gracefully with an
-explanatory message instead of crashing.
+Until the Stripe/Resend env vars are set, the relevant buttons fail
+gracefully with an explanatory message instead of crashing. Full go-live
+steps (domain, Stripe, Resend, cron, comping free accounts) are in
+[`LAUNCH_CHECKLIST.md`](./LAUNCH_CHECKLIST.md).
 
 ## Tiers
 
 - **Starter ($49 one-time)** — all four engines, net worth tracking, debt
   payoff planner, Money Date ritual.
 - **Complete ($129 one-time)** — everything in Starter, plus budgeting,
-  goals, full Money Date history, and CSV export.
-- **Plus ($19/mo add-on)** — requires Starter or Complete. Money Date
-  reminders and a changelog feed, wired for future use.
+  goals, full Money Date history, CSV export/import, and the 30-day
+  onboarding sprint checklist.
+- **Plus ($19/mo or $190/yr add-on)** — requires Starter or Complete.
+  Money Date reminder emails and a changelog feed.
 
 Feature gating lives in `src/lib/tiers.ts`.
 
