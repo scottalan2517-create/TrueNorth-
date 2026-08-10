@@ -38,13 +38,18 @@ export default async function UpgradePage() {
             {owned && user.tier === id ? (
               <p className="text-center text-sm font-semibold text-navy/40">Your current plan</p>
             ) : (
-              <CheckoutButton product={id} label={`Get ${tier.name.replace("TrueNorth ", "")}`} variant={id === "COMPLETE" ? "gold" : "outline"} />
+              <CheckoutButton
+                product={id}
+                label={`Get ${tier.name.replace("TrueNorth ", "")}`}
+                variant={id === "COMPLETE" ? "gold" : "outline"}
+                defaultEmail={user.email}
+              />
             )}
           </Card>
         );
       })}
 
-      <PlusPricingCard plusActive={user.plusActive} canBuy={!!user.tier} />
+      <PlusPricingCard plusActive={user.plusActive} canBuy={!!user.tier} email={user.email} />
 
       <p className="text-center text-xs text-navy/35 font-mono">
         Educational use only · Not financial, investment, or tax advice

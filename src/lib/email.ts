@@ -19,6 +19,27 @@ function getResend(): Resend {
   return client;
 }
 
+export async function sendPreOrderConfirmation(to: string, firstName: string | null) {
+  const from = process.env.EMAIL_FROM;
+  if (!from) {
+    throw new Error("EMAIL_FROM is not set. Add it to your .env file.");
+  }
+  const greeting = firstName ? `Hey ${firstName},` : "Hey,";
+
+  await getResend().emails.send({
+    from,
+    to,
+    subject: "You're on the list for TrueNorth",
+    text: [
+      greeting,
+      "",
+      "You're locked in. We're finishing up checkout on our end — the moment it's live, you'll get an email with a direct link to unlock your account. No charge until then.",
+      "",
+      "— TrueNorth",
+    ].join("\n"),
+  });
+}
+
 export async function sendPasswordResetEmail(to: string, firstName: string | null, token: string) {
   const from = process.env.EMAIL_FROM;
   if (!from) {

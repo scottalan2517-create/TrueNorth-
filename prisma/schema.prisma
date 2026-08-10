@@ -215,3 +215,17 @@ model MoneyDateLog {
 
   @@index([userId, date])
 }
+
+// Captured when someone tries to buy a tier before Stripe is configured —
+// the checkout button falls back to this instead of a dead 501. userId is
+// set when the person was signed in at the time (the normal case, since
+// this only appears on the post-signup upgrade screen).
+model PreOrder {
+  id      String  @id @default(cuid())
+  email   String  @unique
+  product String
+  userId  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

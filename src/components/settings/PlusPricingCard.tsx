@@ -9,7 +9,15 @@ import { Check } from "lucide-react";
 
 type Billing = "monthly" | "annual";
 
-export function PlusPricingCard({ plusActive, canBuy }: { plusActive: boolean; canBuy: boolean }) {
+export function PlusPricingCard({
+  plusActive,
+  canBuy,
+  email,
+}: {
+  plusActive: boolean;
+  canBuy: boolean;
+  email: string;
+}) {
   const [billing, setBilling] = useState<Billing>("monthly");
   const monthlyEquivalent = Math.round((PLUS.annualPrice / 12) * 100) / 100;
 
@@ -78,6 +86,8 @@ export function PlusPricingCard({ plusActive, canBuy }: { plusActive: boolean; c
           product={billing === "monthly" ? "PLUS" : "PLUS_ANNUAL"}
           label={billing === "monthly" ? "Add Plus" : "Add Plus — billed yearly"}
           variant="gold"
+          defaultEmail={email}
+          dark
         />
       )}
     </DarkCard>
