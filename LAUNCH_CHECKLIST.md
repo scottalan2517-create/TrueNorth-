@@ -51,6 +51,23 @@ Then set:
   cron-job.org) at `<your domain>/api/cron/money-date-reminders` once a
   day, with header `Authorization: Bearer <CRON_SECRET>`.
 
+## Pre-orders collected before Stripe is live
+
+Until Stripe's price IDs are set (step 2), every checkout button falls
+back to a pre-order capture instead of a dead end — email + which tier
+they wanted, saved to a `PreOrder` table. To see who's on the list, run
+in the same Postgres → Data → Query box:
+
+```sql
+SELECT email, product, "createdAt" FROM "PreOrder" ORDER BY "createdAt" DESC;
+```
+
+Once Stripe is configured, checkout starts working normally again for
+new clicks — but people already captured in `PreOrder` won't automatically
+get charged or unlocked. Either email them a signup/checkout link, or
+comp them directly with the same `UPDATE "User"` query below if that's
+the plan (e.g. an early-bird deal for pre-orderers).
+
 ## Comping free accounts (friends, reviewers)
 
 No promo-code system exists — this is a manual DB update. Full steps
