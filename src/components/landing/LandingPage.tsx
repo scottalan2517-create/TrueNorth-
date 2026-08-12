@@ -4,6 +4,16 @@ import { LinkButton } from "@/components/ui/Button";
 import { TIERS, PLUS } from "@/lib/tiers";
 import { Check, X } from "lucide-react";
 
+// Standard-plan monthly-equivalent pricing for well-known subscription
+// budgeting apps, based on their published annual plans. Update these if a
+// competitor changes pricing — Starter/Complete pull live from TIERS above,
+// so only these three numbers ever need touching.
+const BREAK_EVEN = [
+  { name: "YNAB", monthly: 9.08 },
+  { name: "Monarch Money", monthly: 8.33 },
+  { name: "Copilot Money", monthly: 7.92 },
+];
+
 const PRIORITY_STATES = [
   { dot: "bg-red", name: "Stabilize & Attack Debt", desc: "Emergency + debt" },
   { dot: "bg-red", name: "Survival — build buffer", desc: "No safety net" },
@@ -314,6 +324,43 @@ export function LandingPage() {
 
           <p className="text-center text-xs text-cream/40 font-mono mt-8">
             Educational use only · Not financial, investment, or tax advice
+          </p>
+        </div>
+      </section>
+
+      {/* BREAK-EVEN */}
+      <section className="py-16 px-5">
+        <div className="mx-auto max-w-2xl">
+          <p className="mono-label text-gold mb-3 text-center">Do the math</p>
+          <h2 className="font-display text-3xl leading-tight mb-3 text-center">
+            Buy it once. Stop paying forever.
+          </h2>
+          <p className="text-navy/60 text-lg leading-relaxed text-center mb-10">
+            Every budgeting app worth comparing to charges monthly, for as long as you use it.
+            TrueNorth doesn&rsquo;t.
+          </p>
+          <div className="rounded-2xl border border-navy/8 bg-white overflow-hidden">
+            <div className="grid grid-cols-3 gap-2 px-5 py-3 border-b border-navy/8 mono-label text-navy/40">
+              <span>Compared to</span>
+              <span className="text-right">Their price</span>
+              <span className="text-right">Starter pays off in</span>
+            </div>
+            {BREAK_EVEN.map((c) => (
+              <div
+                key={c.name}
+                className="grid grid-cols-3 gap-2 px-5 py-3.5 border-b border-navy/6 last:border-0 items-center"
+              >
+                <span className="text-sm font-semibold text-navy">{c.name}</span>
+                <span className="text-sm text-navy/55 text-right font-mono">${c.monthly.toFixed(2)}/mo</span>
+                <span className="text-sm text-gold font-semibold text-right">
+                  {Math.ceil(TIERS.STARTER.price / c.monthly)} months
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="text-navy/45 text-xs text-center mt-4 leading-relaxed">
+            After that, TrueNorth is free forever — no subscription, ever. Based on each
+            competitor&rsquo;s standard annual plan, current as of publishing.
           </p>
         </div>
       </section>

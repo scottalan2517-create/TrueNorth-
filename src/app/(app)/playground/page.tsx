@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { getFinancialState } from "@/lib/financial-state";
+import { ProjectionScenarios } from "@/components/dashboard/ProjectionScenarios";
+import { MonoLabel } from "@/components/ui/Card";
 import { PlaygroundClient } from "./playground-client";
 
 export default async function PlaygroundPage() {
@@ -18,6 +20,12 @@ export default async function PlaygroundPage() {
         <p className="text-navy/50 text-sm mt-1">
           Drag it. Nothing here is saved — this is just the engines answering a question.
         </p>
+      </div>
+
+      <ProjectionScenarios startingBalance={investableStart} />
+
+      <div>
+        <MonoLabel className="text-navy/40">Custom — your numbers</MonoLabel>
       </div>
 
       <PlaygroundClient
