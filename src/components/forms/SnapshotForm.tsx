@@ -30,11 +30,14 @@ export function SnapshotForm({
   defaultOpen = false,
   hideToggle = false,
   onSaved,
+  syncedTotals,
 }: {
   latest: Record<FieldKey, number> | null;
   defaultOpen?: boolean;
   hideToggle?: boolean;
   onSaved?: () => void;
+  /** From linked bank accounts (opt-in Plus perk) — a one-tap fill, never automatic. */
+  syncedTotals?: { cash: number; investments: number };
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(defaultOpen);
@@ -92,6 +95,21 @@ export function SnapshotForm({
       </div>
 
       <p className="mono-label text-navy/35 mb-2">Assets</p>
+      {syncedTotals && (
+        <button
+          type="button"
+          onClick={() =>
+            setValues((v) => ({
+              ...v,
+              cash: String(syncedTotals.cash),
+              investments: String(syncedTotals.investments),
+            }))
+          }
+          className="mb-3 text-xs font-semibold text-gold text-left"
+        >
+          Fill cash &amp; investments from linked accounts →
+        </button>
+      )}
       <div className="flex flex-col gap-3 mb-5">
         {ASSET_FIELDS.map((f) => (
           <Field key={f.key} label={f.label} htmlFor={f.key}>

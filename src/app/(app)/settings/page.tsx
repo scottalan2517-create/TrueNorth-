@@ -9,12 +9,25 @@ import { PortalButton } from "@/components/settings/PortalButton";
 import { ChangePasswordForm } from "@/components/settings/ChangePasswordForm";
 import { DeleteAccountSection } from "@/components/settings/DeleteAccountSection";
 import { CsvImportForm } from "@/components/settings/CsvImportForm";
+import { LinkedAccounts } from "@/components/settings/LinkedAccounts";
 import { hasFeature, TIERS } from "@/lib/tiers";
+import { isPlaidConfigured } from "@/lib/plaid";
 import { Download } from "lucide-react";
 
 export default async function SettingsPage() {
   const user = await requireUser();
   const profile = await db.financialProfile.findUnique({ where: { userId: user.id } });
+
+  const canBankLink = hasFeature(user, "bank_linking");
+  const plaidReady = isPlaidConfigured();
+  const plaidItems =
+    canBankLink && plaidReady
+      ? await db.plaidItem.findMany({
+          where: { userId: user.id },
+          include: { accounts: true },
+          orderBy: { createdAt: "asc" },
+        })
+      : [];
 
   return (
     <div className="flex flex-col gap-4">
@@ -42,6 +55,35 @@ export default async function SettingsPage() {
           )}
           {user.stripeCustomerId && <PortalButton />}
         </div>
+      </Card>
+
+      <Card>
+        <MonoLabel className="text-navy/40 mb-3 block">Bank Sync</MonoLabel>
+        {!canBankLink ? (
+          <p className="text-sm text-navy/45">
+            Optional bank sync is part of{" "}
+            <Link href="/settings/upgrade" className="text-gold font-medium">
+              TrueNorth Plus
+            </Link>
+            .
+          </p>
+        ) : !plaidReady ? (
+          <p className="text-sm text-navy/45">Bank sync isn&rsquo;t set up yet — check back soon.</p>
+        ) : (
+          <LinkedAccounts
+            items={plaidItems.map((i) => ({
+              id: i.id,
+              institutionName: i.institutionName,
+              status: i.status,
+              accounts: i.accounts.map((a) => ({
+                id: a.id,
+                name: a.name,
+                mask: a.mask,
+                currentBalance: a.currentBalance,
+              })),
+            }))}
+          />
+        )}
       </Card>
 
       <Card>

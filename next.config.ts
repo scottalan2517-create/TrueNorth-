@@ -1,11 +1,13 @@
 import type { NextConfig } from "next";
 
 // Everything this app loads is same-origin or a full navigation (Stripe
-// Checkout redirect), not an embed — so the CSP has no third-party
-// allowances to carry.
+// Checkout redirect), not an embed — with one deliberate exception: Plaid
+// Link (optional bank sync, opt-in Plus perk) runs in an embedded iframe
+// from cdn.plaid.com, per Plaid's documented CSP requirements
+// (https://plaid.com/docs/link/web/#link-web-integration-content-security-policy).
 //
-// This is Next's own documented "without nonces" CSP baseline (see
-// node_modules/next/dist/docs/01-app/02-guides/content-security-policy.md).
+// This is otherwise Next's own documented "without nonces" CSP baseline
+// (see node_modules/next/dist/docs/01-app/02-guides/content-security-policy.md).
 // A nonce-based script-src is stricter, but it requires forcing *every*
 // route into dynamic rendering — Next's own inline hydration scripts get
 // baked into static HTML at build time with no way to match a per-request
@@ -17,11 +19,12 @@ import type { NextConfig } from "next";
 const isDev = process.env.NODE_ENV === "development";
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' https://cdn.plaid.com${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   "font-src 'self'",
-  "connect-src 'self'",
+  "connect-src 'self' https://production.plaid.com https://sandbox.plaid.com",
+  "frame-src https://cdn.plaid.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

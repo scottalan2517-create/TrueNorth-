@@ -16,11 +16,13 @@ export function MoneyDateWizard({
   priority,
   actionItems,
   logCount,
+  syncedTotals,
 }: {
   latest: Record<string, number> | null;
   priority: PriorityResult;
   actionItems: ActionItem[];
   logCount: number;
+  syncedTotals?: { cash: number; investments: number };
 }) {
   const router = useRouter();
   const [phase, setPhase] = useState(0);
@@ -69,7 +71,13 @@ export function MoneyDateWizard({
           <p className="text-navy/60 text-sm">
             Update your balances to today&rsquo;s numbers. One row, ~7 minutes.
           </p>
-          <SnapshotForm latest={latest} defaultOpen hideToggle onSaved={() => setPhase(1)} />
+          <SnapshotForm
+            latest={latest}
+            defaultOpen
+            hideToggle
+            onSaved={() => setPhase(1)}
+            syncedTotals={syncedTotals}
+          />
           <button onClick={() => setPhase(1)} className="text-sm text-navy/40 self-center">
             Numbers haven&rsquo;t changed — skip
           </button>

@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { getFinancialState } from "@/lib/financial-state";
+import { db } from "@/lib/db";
+import { hasFeature } from "@/lib/tiers";
+import { summarizeLinkedBalances } from "@/lib/plaid-categorize";
 import { Card, MonoLabel } from "@/components/ui/Card";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { Sparkline } from "@/components/ui/Sparkline";
@@ -10,7 +13,13 @@ import { format } from "date-fns";
 export default async function NetWorthPage() {
   const user = await requireUser();
   if (!user.tier) redirect("/settings/upgrade");
-  const state = await getFinancialState(user.id);
+  const [state, linkedAccounts] = await Promise.all([
+    getFinancialState(user.id),
+    hasFeature(user, "bank_linking")
+      ? db.linkedAccount.findMany({ where: { plaidItem: { userId: user.id } } })
+      : Promise.resolve([]),
+  ]);
+  const syncedTotals = linkedAccounts.length > 0 ? summarizeLinkedBalances(linkedAccounts) : undefined;
   const { snapshots, latest } = state;
 
   const rows = [...snapshots].reverse();
@@ -61,6 +70,7 @@ export default async function NetWorthPage() {
               }
             : null
         }
+        syncedTotals={syncedTotals}
       />
 
       <div>

@@ -51,6 +51,25 @@ Then set:
   cron-job.org) at `<your domain>/api/cron/money-date-reminders` once a
   day, with header `Authorization: Bearer <CRON_SECRET>`.
 
+## 5. Plaid (optional — opt-in bank sync, off by default, Plus perk)
+
+Not required to launch. If you skip this, "Bank Sync" simply doesn't
+appear for Plus members — no error, no broken button.
+
+- Sign up at dashboard.plaid.com, get Sandbox credentials first (free,
+  fake bank data — good for testing the flow end to end before going live).
+- Set `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENV="sandbox"`.
+- Set `PLAID_TOKEN_ENCRYPTION_KEY` — generate with
+  `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
+  This encrypts linked bank tokens at rest; losing it means every linked
+  account needs reconnecting, so keep it somewhere safe (a password
+  manager, not just Railway).
+- When ready for real banks: apply for Production access in Plaid's
+  dashboard (approval isn't instant), then flip `PLAID_ENV="production"`
+  and swap in your production `PLAID_CLIENT_ID`/`PLAID_SECRET`.
+- This is entirely separate from Stripe/Resend — nothing else depends on
+  it, and nothing breaks if you never set it up at all.
+
 ## Pre-orders collected before Stripe is live
 
 Until Stripe's price IDs are set (step 2), every checkout button falls

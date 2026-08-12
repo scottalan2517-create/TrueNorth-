@@ -50,6 +50,12 @@ enum PayoffStrategy {
   SNOWBALL
 }
 
+enum PlaidItemStatus {
+  ACTIVE
+  ERROR
+  DISCONNECTED
+}
+
 // The paying customer. Multi-tenant — every other model is scoped to a userId.
 model User {
   id           String   @id @default(cuid())
@@ -89,6 +95,48 @@ model User {
   budgetCategories BudgetCategory[]
   goals           Goal[]
   moneyDates      MoneyDateLog[]
+  plaidItems      PlaidItem[]
+}
+
+// An opt-in, off-by-default Plus perk — a linked bank connection via
+// Plaid. Nothing here feeds into the engines automatically; the Money
+// Date wizard can pull from it as a one-tap prefill, but every save is
+// still the user's own manual confirmation. accessTokenEncrypted is
+// AES-256-GCM at rest (src/lib/token-encryption.ts); the plaintext token
+// is never persisted.
+model PlaidItem {
+  id                    String          @id @default(cuid())
+  userId                String
+  user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId                String          @unique
+  accessTokenEncrypted  String
+  institutionName       String?
+  status                PlaidItemStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts LinkedAccount[]
+
+  @@index([userId])
+}
+
+model LinkedAccount {
+  id          String    @id @default(cuid())
+  plaidItemId String
+  plaidItem   PlaidItem @relation(fields: [plaidItemId], references: [id], onDelete: Cascade)
+
+  accountId        String  @unique
+  name             String
+  mask             String?
+  type             String
+  subtype          String?
+  currentBalance   Float?
+  availableBalance Float?
+
+  syncedAt DateTime @default(now())
+
+  @@index([plaidItemId])
 }
 
 // Settings that feed the four engines. One row per user.

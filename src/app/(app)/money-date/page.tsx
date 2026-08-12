@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { getFinancialState } from "@/lib/financial-state";
 import { db } from "@/lib/db";
 import { hasFeature } from "@/lib/tiers";
+import { summarizeLinkedBalances } from "@/lib/plaid-categorize";
 import { MoneyDateWizard } from "./money-date-wizard";
 import { MoneyDateHistory } from "@/components/money-date/MoneyDateHistory";
 import { UpsellEmptyState } from "@/components/ui/UpsellEmptyState";
@@ -10,10 +11,14 @@ import { UpsellEmptyState } from "@/components/ui/UpsellEmptyState";
 export default async function MoneyDatePage() {
   const user = await requireUser();
   if (!user.tier) redirect("/settings/upgrade");
-  const [state, logs] = await Promise.all([
+  const [state, logs, linkedAccounts] = await Promise.all([
     getFinancialState(user.id),
     db.moneyDateLog.findMany({ where: { userId: user.id }, orderBy: { date: "desc" } }),
+    hasFeature(user, "bank_linking")
+      ? db.linkedAccount.findMany({ where: { plaidItem: { userId: user.id } } })
+      : Promise.resolve([]),
   ]);
+  const syncedTotals = linkedAccounts.length > 0 ? summarizeLinkedBalances(linkedAccounts) : undefined;
 
   return (
     <div className="flex flex-col gap-4">
@@ -42,6 +47,7 @@ export default async function MoneyDatePage() {
         priority={state.priority}
         actionItems={state.actionItems}
         logCount={logs.length}
+        syncedTotals={syncedTotals}
       />
 
       {hasFeature(user, "money_date_history") ? (

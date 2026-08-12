@@ -58,6 +58,7 @@ export const PLUS = {
     "Ongoing updates as they ship",
     "New modules & engine upgrades",
     "Money Date reminders",
+    "Optional bank sync — connect accounts, skip the typing",
     "Member-only templates & extras",
     "Priority support & requests",
   ],
@@ -71,7 +72,8 @@ export type Feature =
   | "onboarding_sprint"
   | "money_date_history"
   | "reminders"
-  | "changelog";
+  | "changelog"
+  | "bank_linking";
 
 const COMPLETE_FEATURES = new Set<Feature>([
   "budget",
@@ -81,7 +83,7 @@ const COMPLETE_FEATURES = new Set<Feature>([
   "onboarding_sprint",
   "money_date_history",
 ]);
-const PLUS_FEATURES = new Set<Feature>(["reminders", "changelog"]);
+const PLUS_FEATURES = new Set<Feature>(["reminders", "changelog", "bank_linking"]);
 
 export function hasFeature(
   user: { tier: TierId | null; plusActive: boolean },
